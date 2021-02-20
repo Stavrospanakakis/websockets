@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WebSockets</title>
+  </head>
+  <body>
+    <button onclick="ConnectWebsocket()">Connect</button>
+    <div id="content"></div>
+
+  </body>
+  <script>
+    const addMessageToDOM = (message) => {
+      const content = document.getElementById('content')
+      let child = document.createElement('div')
+      var message = `${new Date().toLocaleString()} - ${message}`
+      child.innerHTML = message
+      content.appendChild(child);
+    }
+
+    const ConnectWebsocket = () => {
+        const socket = new WebSocket('ws://127.0.0.1:8080/ws')
+
+        socket.onopen = () => {
+          addMessageToDOM('Successfully Connected')
+          socket.send(`${new Date().toLocaleString()} - Client connected successfully!`)
+          document.querySelector('button').disabled = true
+        }
+        
+        socket.onmessage = event => {
+          var message = event.data
+          addMessageToDOM(message)
+          socket.send(`${new Date().toLocaleString()} - Client received the message!`)
+        }
+
+        socket.onclose = event => {
+          addMessageToDOM('Disconnected')
+          socket.send(`${new Date().toLocaleString()} - Client disconnected!`)
+          document.querySelector('button').disabled = false
+        }
+    }
+  </script>
+</html>
